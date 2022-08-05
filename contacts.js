@@ -1,15 +1,15 @@
 const fs = require("fs/promises");
 const path = require("path");
-const { nanoId } = require("nanoid");
+const { nanoid } = require("nanoid");
 
 const contactsPath = path.join(__dirname, "db", "contacts.json");
 
 async function refreshContacts(contacts) {
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, _, 2));
+  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 }
 async function listContacts() {
   const contacts = await fs.readFile(contactsPath);
-  console.log(JSON.parse(contacts));
+  // console.log(JSON.parse(contacts));
   return JSON.parse(contacts);
 }
 
@@ -17,9 +17,11 @@ async function getContactById(contactId) {
   const contacts = await listContacts();
   const oneContact = contacts.find((cont) => cont.id === contactId);
   if (!oneContact) {
+    console.log("not found");
     return null;
   }
-  return JSON.parse(oneContact);
+  console.log(oneContact);
+  return oneContact;
 }
 
 async function removeContact(contactId) {
@@ -33,17 +35,19 @@ async function removeContact(contactId) {
   return removedContact;
 }
 
-function addContact(name, email, phone) {
+async function addContact(name, email, phone) {
   const contacts = await listContacts();
-  const isInList = contacts.some(item => item.name === name || item.email === email || item.phone === phone);
+  const isInList = contacts.some(
+    (item) => item.name === name || item.email === email || item.phone === phone
+  );
   if (isInList) {
-    console.log('Already in list!');
-    return null
+    console.log("Already in list!");
+    return null;
   }
-  const newContact = { id: nanoId(), name, email, phone };
+  const newContact = { id: nanoid(), name, email, phone };
   contacts.push(newContact);
-  await listContacts(contacts);
-  return JSON.parse(contacts);
+  await refreshContacts(contacts);
+  return contacts;
 }
 
-module.exports={listContacts,getContactById, removeContact, addContact}
+module.exports = { listContacts, getContactById, removeContact, addContact };
