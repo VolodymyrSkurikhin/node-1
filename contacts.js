@@ -9,7 +9,7 @@ async function refreshContacts(contacts) {
 }
 async function listContacts() {
   const contacts = await fs.readFile(contactsPath);
-  // console.log(JSON.parse(contacts));
+  // console.table(JSON.parse(contacts));
   return JSON.parse(contacts);
 }
 
@@ -32,6 +32,8 @@ async function removeContact(contactId) {
   }
   const [removedContact] = contacts.splice(indx, 1);
   await refreshContacts(contacts);
+  contacts = await listContacts();
+  console.table(contacts);
   return removedContact;
 }
 
@@ -47,6 +49,8 @@ async function addContact(name, email, phone) {
   const newContact = { id: nanoid(), name, email, phone };
   contacts.push(newContact);
   await refreshContacts(contacts);
+  contacts = await listContacts();
+  console.table(contacts);
   return contacts;
 }
 
