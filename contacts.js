@@ -9,7 +9,6 @@ async function refreshContacts(contacts) {
 }
 async function listContacts() {
   const contacts = await fs.readFile(contactsPath);
-  // console.table(JSON.parse(contacts));
   return JSON.parse(contacts);
 }
 
@@ -25,7 +24,7 @@ async function getContactById(contactId) {
 }
 
 async function removeContact(contactId) {
-  const contacts = await listContacts();
+  let contacts = await listContacts();
   const indx = contacts.findIndex((cont) => cont.id === contactId);
   if (indx === -1) {
     return null;
@@ -38,7 +37,7 @@ async function removeContact(contactId) {
 }
 
 async function addContact(name, email, phone) {
-  const contacts = await listContacts();
+  let contacts = await listContacts();
   const isInList = contacts.some(
     (item) => item.name === name || item.email === email || item.phone === phone
   );
